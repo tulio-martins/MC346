@@ -61,8 +61,8 @@ CC (v:vs) edges
 
 DFS _ _ [] = []
 DFS v edges (first:rest)
-  | [x|x<-v, x==first] == [] = DFS remain edges rest
-  | otherwise                = first : DFS remain edges (adj ++ rest)
+  | ([x|x<-v, x==first] == []) = DFS remain edges rest
+  | otherwise                  = first : DFS remain edges (adj ++ rest)
   where
   adj = [x|(x, y, z)<-edges, x == first] ++ [x|(y, x, z)<-edges, y == first]
   remain = [x|x<-v, x/=first]
