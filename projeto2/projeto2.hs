@@ -71,4 +71,4 @@ main = do print $ CC v e
     where
     --tenho que ARRUMAR A SAIDA DA FUNCAO PRIM
     --imagino buildGraphV como os vertices do grafo construido, buildGraphE como arestas
-    v:e = prim (GraphW buildGraphV buildGraphE)
+    GraphW v e = prim (GraphW buildGraphV buildGraphE)
