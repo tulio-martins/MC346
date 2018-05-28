@@ -56,4 +56,11 @@ conComponents edges x:xs resx:resxs
   | (belongs x resx) = conComponents edges xs resx:resxs
   | otherwise        =
 
+belongs x [] = False
+belongs x y:ys
+  | x == y    = True
+  | otherwise = belongs x ys
+
+
+
 main = do print $ prim (GraphW [1,2,3,4,5] g5)
