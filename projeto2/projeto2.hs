@@ -50,17 +50,25 @@ k_grouping x:xs k = k_grouping (findMax g5 g5 x) k-1
 
 --Given the edges and vertixes of a graph, finds its connected compenents
 
---conComponents edges vertixes result
-conComponents _ [] res = res
-conComponents edges x:xs resx:resxs
-  | (belongs x resx) = conComponents edges xs resx:resxs
-  | otherwise        =
+--CC vertixes -> edges -> list of connected components
+CC [] _ = []
+CC (v:vs) edges
+  | rest == [] = [components]
+  | otherwise      = components : CC rest edges
+  where
+  rest   = (v:vs) \\ components
+  components = DFS (v:vs) edges [v]
 
-belongs x [] = False
-belongs x y:ys
-  | x == y    = True
-  | otherwise = belongs x ys
+DFS _ _ [] = []
+DFS v edges (first:rest)
+  | [x|x<-v, x==first] == [] = DFS remain edges rest
+  | otherwise                = first : DFS remain edges (adj ++ rest)
+  where
+  adj = [x|(x, y, z)<-edges, x == first] ++ [x|(y, x, z)<-edges, y == first]
+  remain = [x|x<-v, x/=first]
 
-
-
-main = do print $ prim (GraphW [1,2,3,4,5] g5)
+main = do print $ CC v e
+    where
+    --tenho que ARRUMAR A SAIDA DA FUNCAO PRIM
+    --imagino buildGraphV como os vertices do grafo construido, buildGraphE como arestas
+    v:e = prim (GraphW buildGraphV buildGraphE)
