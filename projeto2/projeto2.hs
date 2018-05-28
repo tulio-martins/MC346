@@ -26,10 +26,6 @@ prim' chosenV chosenE nE (GraphW vs es) = prim' (newV : chosenV) (newE : chosenE
 xor :: Bool -> Bool -> Bool
 xor = (/=)
 
--- The graph from the problem statement:
-g5 = [(1,2,12),(1,3,34),(1,5,78),(2,4,55),(2,5,32),(3,4,61),(3,5,44),(4,5,93),(2,1,12),(3,1,34),(5,1,78),(4,2,55),(5,2,32),(4,3,61),(5,3,44),(5,4,93)]
-
-
 --Removing the k biggest edges in the graph
 
 --Removes an item from the list returning the updated list
