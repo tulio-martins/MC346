@@ -1,14 +1,17 @@
 --Tulio Brandao Soares Martins ra:177761
---Luis Fernando Vieira Silva   ra:
+--Luis Fernando Vieira Silva   ra:173170
 
 
 import Data.Bool
 import Data.List
 import Data.Ord
 
-data GraphW a = GraphW [a] [(a, a, Int)]
+data GraphW a = GraphW [a] [(a, a, Double)]
     deriving (Show, Eq)
 
+data Point a b = Point { name :: a
+                       , position :: [b]
+                       } deriving (Show, Eq)
 
 -- Initialise a graph (tree) with the first vertex, and begin:
 prim (GraphW vs es) = prim' [head vs] [] (length vs - 1) (GraphW vs es)
@@ -31,16 +34,16 @@ xor = (/=)
 
 --Removing the k biggest edges in the graph
 
---encontra todas as componentes conexas e as lista em uma lista de componentes
+-- encontra todas as componentes conexas e as lista em uma lista de componentes
 cC [] _ = []
 cC (x:xs) edges
   | rest == [] = [components]
   | otherwise      = components : cC rest edges
   where
-  rest   = (x:xs) \\ components
-  components = dFS (x:xs) edges [x]
+    rest   = (x:xs) \\ components
+    components = dFS (x:xs) edges [x]
 
---executa o DFS para encontrar uma componente conexa
+-- executa o DFS para encontrar uma componente conexa
 dFS _ _ [] = []
 dFS v e (first:rest)
     | ([x|x<-v, x==first] == []) = dFS remain e rest
@@ -49,34 +52,67 @@ dFS v e (first:rest)
     adj = [x|(x, y, z)<-e, y == first] ++ [x|(y, x, z)<-e, y == first]
     remain = [x|x<-v, x/=first]
 
---Remove um item de uma lista de arestas
+-- Remove um item de uma lista de arestas
 rmv :: Eq a => (a, a, Double) -> [(a, a, Double)] -> [(a, a, Double)]
 rmv _ [] = []
 rmv a (x:xs)
   | a == x    = rmv a xs
   | otherwise = x : rmv a xs
 
---Remove a maior aresta de uma lista de arestas
+-- Remove a maior aresta de uma lista de arestas
 findMax :: Eq a =>  [(a, a, Double)] -> [(a, a, Double)] -> (a, a, Double) ->[(a, a, Double)]
 findMax [] edges res  = rmv res edges
 findMax ((a, b, c):xs) edges (x, y, mx)
     | c > mx    = findMax xs edges (a, b, c)
     | otherwise = findMax xs edges (x, y, mx)
 
---agrupa em clusters o grafo dado pelas arestas removendo as k maiores
---arestas e devolvendo uma lista de arestas atualizada
+-- agrupa em clusters o grafo dado pelas arestas removendo as k maiores
+-- arestas e devolvendo uma lista de arestas atualizada
 k_grouping :: Eq a => [(a, a, Double)] -> Int -> [(a, a, Double)]
 k_grouping edg 0 = edg
 k_grouping (x:xs) k = k_grouping (findMax (x:xs) (x:xs)  x) (k-1)
 
---devole a lista de vertices do GraphW
+-- devole a lista de vertices do GraphW
 v_parser (GraphW vs es) = vs
---devole a lista de arestas do GraphW
+-- devole a lista de arestas do GraphW
 e_parser (GraphW vs es) = es
 
-main = do print $ cC graph_v (k_grouping graph_e 0)
-    where
-    graph = prim (GraphW [1,2,3,4,5] g5)
-    graph_v = v_parser(graph)
-    graph_e = e_parser(graph)
-    g5 = [(1,2,12),(1,3,34),(1,5,78),(2,4,55),(2,5,32),(3,4,61),(3,5,44),(4,5,93),(2,1,12),(3,1,34),(5,1,78),(4,2,55),(5,2,32),(4,3,61),(5,3,44),(5,4,93)]
+-- Generates GraphW with connection from all vertices to each other
+generatesGraph :: [(Point a Double)] -> [(Point a Double)] -> 
+    (Point a Double) -> [a] -> [(a, a, Double)] -> (GraphW a)
+generatesGraph [] _ _ accV accE = (GraphW accV accE)
+generatesGraph ((Point n p):xs) [] _ accV accE = 
+    (generatesGraph xs xs (Point n p) (n:accV) (accE))
+generatesGraph vv ((Point n1 p1):ys) (Point n2 p2) accV accE =
+     generatesGraph vv ys (Point n2 p2) accV 
+     ((n2, n1, (distance (Point n1 p1) (Point n2 p2))):accE)
+
+-- Calculates the distance between two points
+distance :: (Floating b) => (Point a b) -> (Point a b) -> b
+distance (Point _ position1) (Point _ position2) = 
+    sqrt (foldl (+) 0 (map (^2) (zipWith (-) position1 position2)))
+
+-- Give a vector of Strings representing the points, returns a vector of Points
+getPoints :: [String] -> [Point Char Double]
+getPoints [] = []
+getPoints (x:xs) =
+    let values = words x
+        pName = head (head values)
+        pPosition = map (read::String->Double) (tail values)
+    in (Point pName pPosition):(getPoints xs)
+
+
+--main = do print $ prim (GraphW [1,2,3,4,5] g5)
+main = do
+    input <- getContents
+    let allLines = lines input
+        numComponents = read (head allLines) :: Int
+        points = getPoints (tail allLines)
+        graph = generatesGraph points [] undefined [] [] 
+        graphP = prim graph
+        components = cC (v_parser graphP) (k_grouping (e_parser graphP) numComponents)
+        result = map sort components
+    --print numComponents
+    --mapM print points
+    --print graph
+    mapM putStrLn (map (intersperse ' ') result)
