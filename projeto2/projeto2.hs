@@ -28,43 +28,46 @@ xor = (/=)
 
 --Removing the k biggest edges in the graph
 
+cC [] _ = []
+cC (x:xs) edges
+  | rest == [] = [components]
+  | otherwise      = components : cC rest edges
+  where
+  rest   = (x:xs) \\ components
+  components = dFS (x:xs) edges [x]
+
+dFS _ _ [] = []
+dFS v e (first:rest)
+  | ([x|x<-v, x==first] == []) = dFS remain e rest
+  | otherwise                  = first : dFS remain e (adj ++ rest)
+  where
+  adj = [x|(x, y, z)<-e, x == first] ++ [x|(y, x, z)<-e, y == first]
+  remain = [x|x<-v, x/=first]
+
 --Removes an item from the list returning the updated list
+rmv :: Eq a => (a, a, Double) -> [(a, a, Double)] -> [(a, a, Double)]
 rmv _ [] = []
 rmv a (x:xs)
   | a == x    = rmv a xs
   | otherwise = x : rmv a xs
 
 --Removes the biggest edge in the tree
+findMax :: Eq a =>  [(a, a, Double)] -> [(a, a, Double)] -> (a, a, Double) ->[(a, a, Double)]
 findMax [] edges res  = rmv res edges
-findMax ((a, b, c):xs) _ (x, y, mx)
-    | c > mx    = findMax xs (a, b, c)
-    | otherwise = findMax xs (x, y, mx)
+findMax ((a, b, c):xs) edges (x, y, mx)
+    | c > mx    = findMax xs edges (a, b, c)
+    | otherwise = findMax xs edges (x, y, mx)
 
---Performs findMax k times
-k_grouping g5 0 = g5
-k_grouping x:xs k = k_grouping (findMax g5 g5 x) k-1
 
---Given the edges and vertixes of a graph, finds its connected compenents
+k_grouping :: Eq a => [(a, a, Double)] -> Int -> [(a, a, Double)]
+k_grouping edg 0 = edg
+k_grouping (x:xs) k = k_grouping (findMax (x:xs) (x:xs)  x) (k-1)
 
---CC vertixes -> edges -> list of connected components
-CC [] _ = []
-CC (v:vs) edges
-  | rest == [] = [components]
-  | otherwise      = components : CC rest edges
-  where
-  rest   = (v:vs) \\ components
-  components = DFS (v:vs) edges [v]
+v_parser (GraphW vs es) = vs
+e_parser (GraphW vs es) = es
 
-DFS _ _ [] = []
-DFS v edges (first:rest)
-  | ([x|x<-v, x==first] == []) = DFS remain edges rest
-  | otherwise                  = first : DFS remain edges (adj ++ rest)
-  where
-  adj = [x|(x, y, z)<-edges, x == first] ++ [x|(y, x, z)<-edges, y == first]
-  remain = [x|x<-v, x/=first]
-
-main = do print $ CC v e
+main = do print $ CC graph_v graph_e
     where
-    --tenho que ARRUMAR A SAIDA DA FUNCAO PRIM
-    --imagino buildGraphV como os vertices do grafo construido, buildGraphE como arestas
-    GraphW v e = prim (GraphW buildGraphV buildGraphE)
+    graph = prim (GraphW buildGraphV buildGraphE)
+    graph_v = v_parser(graph)
+    graph_e = e_parser(graph)
