@@ -1,7 +1,8 @@
 --Tulio Brandao Soares Martins ra:177761
 --Luis Fernando Vieira Silva   ra:173170
 
-
+import System.Environment
+import System.IO
 import Data.Bool
 import Data.List
 import Data.Ord
@@ -93,16 +94,15 @@ distance (Point _ position1) (Point _ position2) =
     sqrt (foldl (+) 0 (map (^2) (zipWith (-) position1 position2)))
 
 -- Give a vector of Strings representing the points, returns a vector of Points
-getPoints :: [String] -> [Point Char Double]
+getPoints :: [String] -> [Point [Char] Double]
 getPoints [] = []
 getPoints (x:xs) =
     let values = words x
-        pName = head (head values)
+        pName = head values
         pPosition = map (read::String->Double) (tail values)
     in (Point pName pPosition):(getPoints xs)
 
 
---main = do print $ prim (GraphW [1,2,3,4,5] g5)
 main = do
     input <- getContents
     let allLines = lines input
@@ -110,9 +110,9 @@ main = do
         points = getPoints (tail allLines)
         graph = generatesGraph points [] undefined [] [] 
         graphP = prim graph
-        components = cC (v_parser graphP) (k_grouping (e_parser graphP) numComponents)
+        components = cC (v_parser graphP) (k_grouping (e_parser graphP) (numComponents-1))
         result = map sort components
     --print numComponents
     --mapM print points
     --print graph
-    mapM putStrLn (map (intersperse ' ') result)
+    mapM putStrLn (map (intercalate " ") result)
