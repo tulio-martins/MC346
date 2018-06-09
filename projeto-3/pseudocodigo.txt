@@ -1,0 +1,40 @@
+ProjetoPython {
+
+  pegarEntradas
+  montarGrafoAPe
+  montarGrafoLinhas
+  simplificarGrafo
+  Djikstra
+  imprimirSaida
+
+}
+
+montarGrafoAPe {
+
+  montagem simples, fazemos uma estrtura simples de grafo e armazenamos-o em listas
+  de adjacencias(?)(nao sei fazer heap de fibonacci)
+
+}
+
+montarGrafoLinhas {
+
+  montamos simples primeiro
+  anexamos possiveis caminhos da mesma linha
+  (ex.: se uma linha123 vai de a para b e de b para c tal que:
+    a b linha123 1
+    b c linha123 2
+
+    linha123 12
+
+    fazemos entao as seguinte arestas
+    a->b com peso 13(espera mais distancia)
+    b->c com peso 14 (||)
+    a->c com peso 15(Espera para entrar na mesma linha so uma vez))
+
+}
+
+simplificarGrafo {
+
+  fazemos um grafo tal que nao exista duas arestas de v para u
+
+}
