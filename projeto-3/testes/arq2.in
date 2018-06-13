@@ -1,0 +1,19 @@
+a b a-pe 4
+b a a-pe 6
+b a linha-370 0.6
+b c a-pe 5 
+b c linha-370 0.5 
+c b a-pe 5
+c b linha-370 0.5
+c d a-pe 3
+c d linha-370 0.3
+d c a-pe 3
+d c linha-370 0.3
+d f a-pe 30
+d f linha-370 3
+f h a-pe 12.3
+f h linha-370 1.2
+
+linha-370 7.5
+
+a h
